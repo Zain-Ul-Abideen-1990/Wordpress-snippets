@@ -1,0 +1,104 @@
+$pluginList = get_option( 'active_plugins' );
+$plugin = 'js_composer/js_composer.php'; 
+
+if ( in_array( $plugin , $pluginList )) {
+	//Installing Events Block into Visual Comporser 
+  	$args = array(
+		'offset'           => '1',
+		'orderby'          => 'title',
+		'order'            => 'ASC',
+		'post_type'        => 'sp_calendar',
+		'post_status'      => 'publish',
+		'suppress_filters' => true 
+	);
+  	$calendar = array();
+	$postslist = get_posts( $args );
+	if(count($postslist)){
+		foreach ( $postslist as $post ) :
+		   $calendar[] = array( $post->post_title =>  $post->ID );
+		endforeach; 
+		$result = array_reduce($calendar, 'array_merge', array('ALL'=>'0'));
+	
+		vc_map( array(
+		   "name" => "Events Block",
+		   "base" => "event_blocks",
+		   "category" => 'Content',
+		   "params" => array(
+			  array(
+				 "type" => "textfield",
+				 "holder" => "div",
+				 "class" => "events_title",
+				 "heading" => "Title",
+				 "param_name" => "title",
+				 "value" => '',
+				 "description" => "Please Enter the Title."
+			  ),
+			  array(
+				 "type" => "dropdown",
+				 "holder" => "div",
+				 "class" => "events_calendar",
+				 "heading" => "Select Calendar",
+				 "param_name" => "id",
+				 "value" => $result,
+				 "description" => "Select any calendar option."
+			  ),
+			  array(
+				 "type" => "dropdown",
+				 "holder" => "div",
+				 "class" => "events_date",
+				 "heading" => "Select Date",
+				 "param_name" => "date",
+				 "value" => array('Default'=>'default','All'=>'','This Week'=>'w','Today'=>'day'),
+				 "description" => "Please select the date."
+			  ),
+			  array(
+				 "type" => "textfield",
+				 "holder" => "div",
+				 "class" => "events_number",
+				 "heading" => "Number of events to show",
+				 "param_name" => "number",
+				 "value" => '5',
+				 "description" => "Enter number of events to show."
+			  ),
+			  array(
+				 "type" => "dropdown",
+				 "holder" => "div",
+				 "class" => "events_order",
+				 "heading" => "Sort Order",
+				 "param_name" => "order",
+				 "value" =>array('Default'=>'default','Ascending'=>'ASC','Descending'=>'DESC'),
+				 "description" => "Please select the order."
+			  ),
+			  array(
+				 "type" => "checkbox",
+				 "holder" => "div",
+				 "class" => "events_show_all_events_link",
+				 "heading" => "Show all events link",
+				 "param_name" => "show_all_events_link",
+				 "value" => array( 'Yes' => true),
+				 "description" => 'Please select this checkbox.'
+			  ),
+			  array(
+				 "type" => "dropdown",
+				 "holder" => "div",
+				 "class" => "events_align",
+				 "heading" => "Alignment",
+				 "param_name" => "align",
+				 "value" =>array('None'=>'none','Left'=>'left','Right'=>'right'),
+				 "description" => "Please select the alignment."
+			  ),
+			   array(
+				 "type" => "dropdown",
+				 "holder" => "div",
+				 "class" => "events_status",
+				 "heading" => "Event Status",
+				 "param_name" => "status",
+				 "value" =>array('Default'=>'default','All'=>'any','Published'=>'publish','Scheduled'=>'future'),
+				 "description" => "Please select the status."
+			  )
+		   )
+		) );
+	}
+} 
+// Display 24 products per page. Goes in functions.php
+add_filter( 'loop_shop_per_page', create_function( '$cols', 'return 24;' ), 20 );
